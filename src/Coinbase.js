@@ -1,0 +1,48 @@
+import React from "react";
+import { render } from "react-dom";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  useQuery,
+  gql
+} from "@apollo/client";
+
+const client = new ApolloClient({
+  uri: "https://48p1r2roz4.sse.codesandbox.io",
+  cache: new InMemoryCache()
+});
+const query = gql`{
+    rates(curreny:"USD") {
+        currency
+        rate
+    }
+}`;
+
+function ExchangeRates() {
+  const { loading, error, data } = useQuery(query);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
+
+  return data.rates.map(({ currency, rate }) => (
+    <div key={currency}>
+      <p>
+        {currency}: {rate}
+      </p>
+    </div>
+  ));
+}
+
+function App() {
+  return (
+    <ApolloProvider client={client}>
+      <div>
+        <h2>My first Apollo app 🚀</h2>
+        <ExchangeRates />
+      </div>
+    </ApolloProvider>
+  );
+}
+
+render(<App />, document.getElementById("root"));
